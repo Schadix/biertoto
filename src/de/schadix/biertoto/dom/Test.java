@@ -1,8 +1,3 @@
-// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
-// Source File Name:   Test.java
-
 package de.schadix.biertoto.dom;
 
 import java.io.ByteArrayInputStream;
@@ -47,14 +42,13 @@ public class Test {
 	private static String GAMEGUEST = "game1Guestteam";
 	private static String GAMERESULT = "game1Result";
 	private static String TIPPS = "tipps";
-	//private static List spieltagList = new ArrayList();
 
 	static XPathFactory xPathFactory = XPathFactory.newInstance();
 	static XPath xpath = xPathFactory.newXPath();
 	static String year = "2010";
 	static URL url = null;
-	static ArrayList<String> tipperOrder=new ArrayList<String>();
-	static boolean verbose = false;
+	static ArrayList<String> tipperOrder = new ArrayList<String>();
+	static boolean debug = false;
 
 	public Test() {
 	}
@@ -62,19 +56,16 @@ public class Test {
 	@SuppressWarnings("static-access")
 	private static void makeOptions(String args[]) throws Exception {
 		Options options = new Options();
-		options.addOption(OptionBuilder
-				.withArgName("tipperOrder")
-				.withLongOpt("tipperOrder")
-				.hasArgs()
-				.withValueSeparator(',')
-				.withDescription("comma seperated list of tippernames")
-				.create('o'));
-		
+		options.addOption(OptionBuilder.withArgName("tipperOrder").withLongOpt(
+				"tipperOrder").hasArgs().withValueSeparator(',')
+				.withDescription("comma seperated list of tippernames").create(
+						'o'));
+
 		options.addOption("h", "help", false, "print this message");
 		options.addOption("q", "version", false, "print version information");
 		options.addOption("y", "year", true, "year to parse");
 		options.addOption("u", "url", true, "url to access");
-		options.addOption("v", "verbose", false, "verbose logging output");
+		options.addOption("d", "debug", false, "debug output");
 
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = parser.parse(options, args);
@@ -83,15 +74,15 @@ public class Test {
 			for (String tippername : values) {
 				tipperOrder.add(tippername);
 			}
-		} else{
+		} else {
 			System.out.println("specify Tippnames like-o Spaceman,Schadix");
-			System.exit(1);			
+			System.exit(1);
 		}
 		if (cmd.hasOption("y")) {
 			year = cmd.getOptionValue('y');
 		}
-		if (cmd.hasOption("y")) {
-			verbose = true;
+		if (cmd.hasOption("d")) {
+			debug = true;
 		}
 		if (cmd.hasOption("q"))
 			System.out.println("version 20090725");
@@ -99,9 +90,9 @@ public class Test {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("ant", options);
 		}
-		if (cmd.hasOption("u")){			
+		if (cmd.hasOption("u")) {
 			Test.url = new URL(cmd.getOptionValue('u'));
-		} else{
+		} else {
 			System.out.println("please specify -u URL to access, like: ");
 			System.exit(1);
 		}
@@ -115,19 +106,18 @@ public class Test {
 			if (year.equals("2008")) {
 				props.load(Test.class
 						.getResourceAsStream("/kicktipp_xpath2008.properties"));
-			} else if (year.equals("2009")){
+			} else if (year.equals("2009")) {
 				props.load(Test.class
 						.getResourceAsStream("/kicktipp_xpath2009.properties"));
 			} else {
 				props.load(Test.class
-						.getResourceAsStream("/kicktipp_xpath2010.properties"));				
+						.getResourceAsStream("/kicktipp_xpath2010.properties"));
 			}
 			Tidy xmlDoc = new Tidy();
 			xmlDoc.setXmlOut(true);
 
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();
-			// factory.setValidating(false);
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
 			docBuilder.setEntityResolver(new CustomEntityResolver());
 			Spieltag spieltag = new Spieltag();
@@ -135,24 +125,22 @@ public class Test {
 
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			xmlDoc.parseDOM(Test.url.openStream(), outStream);
-			// FileOutputStream fileOutputStream = new
-			// FileOutputStream("test.xml");
-			// outStream.writeTo(fileOutputStream);
-			// outStream.flush();
+			if (debug) {
+				FileOutputStream fileOutputStream = new FileOutputStream(
+						"test.xml");
+				outStream.writeTo(fileOutputStream);
+				outStream.flush();
+			}
 
-			// Document doc3 = docBuilder.parse(new File("test.xml"));
-			// doc3.get
-			// new ByteArrayInputStream(outStream.toByteArray()));
 			Document doc3 = docBuilder.parse(new ByteArrayInputStream(outStream
 					.toByteArray()));
 
 			NodeList nl = ((NodeList) findXPath(doc3, props.getProperty(TIPPS),
 					XPathConstants.NODESET));
-			
+
 			int nrOfTippsInt = nl.getLength();
 			int nrOfGamesInt = 9;
 			for (int i = 1; i <= nrOfGamesInt; i++) {
-				// List gameTipps = new ArrayList();
 				Game game = new Game(
 						(String) findXPath(doc3, replaceVar(i, props
 								.getProperty(GAMEHOME)), XPathConstants.STRING),

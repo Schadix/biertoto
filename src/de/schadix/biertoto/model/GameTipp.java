@@ -2,9 +2,6 @@ package de.schadix.biertoto.model;
 
 import java.util.*;
 
-// Referenced classes of package de.schadix.biertoto.model:
-//            Tipp, Game
-
 public class GameTipp
 {
 
