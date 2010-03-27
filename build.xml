@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="biertoto" default="jar">
+
+	<target name="jar">
+		<jar destfile="dist/biertoto.jar">
+			<fileset dir="bin" />
+			<fileset dir="resources" />
+		</jar>
+		<copy todir="dist">
+			<fileset dir="lib" />
+		</copy>
+		<copy file="biertoto.sh" todir="dist" />
+		<copy file="biertoto.bat_" todir="dist" />
+	</target>
+</project>
