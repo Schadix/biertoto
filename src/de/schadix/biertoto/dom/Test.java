@@ -41,6 +41,10 @@ public class Test {
 	private static String GAMEHOME = "game1Hometeam";
 	private static String GAMEGUEST = "game1Guestteam";
 	private static String GAMERESULT = "game1Result";
+	
+	private static String GAMEHOMERESULT = "game1HomeResult";
+	private static String GAMEGUESTRESULT = "game1GuestResult";
+	
 	private static String TIPPS = "tipps";
 
 	static XPathFactory xPathFactory = XPathFactory.newInstance();
@@ -111,7 +115,7 @@ public class Test {
 						.getResourceAsStream("/kicktipp_xpath2009.properties"));
 			} else {
 				props.load(Test.class
-						.getResourceAsStream("/kicktipp_xpath2010.properties"));
+						.getResourceAsStream("/kicktipp_xpath2010_2.properties"));
 			}
 			Tidy xmlDoc = new Tidy();
 			xmlDoc.setXmlOut(true);
@@ -142,13 +146,11 @@ public class Test {
 			int nrOfGamesInt = 9;
 			for (int i = 1; i <= nrOfGamesInt; i++) {
 				Game game = new Game(
-						(String) findXPath(doc3, replaceVar(i, props
-								.getProperty(GAMEHOME)), XPathConstants.STRING),
-						(String) findXPath(doc3, replaceVar(i, props
-								.getProperty(GAMEGUEST)), XPathConstants.STRING),
-						new Result((String) findXPath(doc3, replaceVar(i, props
-								.getProperty(GAMERESULT)),
-								XPathConstants.STRING)));
+						getXpathValue(props, GAMEHOME, doc3, i),
+						getXpathValue(props, GAMEGUEST, doc3, i),
+						year.equals("2010") ? (new Result((getXpathValue(props, GAMEHOMERESULT, doc3, i)) 
+								   + ":" + (getXpathValue(props, GAMEGUESTRESULT, doc3, i))))
+								   	: new Result(getXpathValue(props, GAMERESULT, doc3, i)));
 				List<Tipp> tippList = new ArrayList<Tipp>();
 
 				for (int i1 = 1; i1 <= nrOfTippsInt; i1++) {
@@ -173,6 +175,11 @@ public class Test {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private static String getXpathValue(Properties props, String property, Document doc3, int i) {
+		return (String) findXPath(doc3, replaceVar(i, props
+				.getProperty(property)), XPathConstants.STRING);
 	}
 
 	private static Object findXPath(Object doc, String xpath,
