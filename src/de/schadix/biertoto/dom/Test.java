@@ -113,10 +113,12 @@ public class Test {
 			} else if (year.equals("2009")) {
 				props.load(Test.class
 						.getResourceAsStream("/kicktipp_xpath2009.properties"));
-			} else {
+			} // TODO: does not take 2010_2 into account any more
+			else {
 				props.load(Test.class
-						.getResourceAsStream("/kicktipp_xpath2010_2.properties"));
+						.getResourceAsStream("/kicktipp_xpath2010_3.properties"));
 			}
+				
 			Tidy xmlDoc = new Tidy();
 			xmlDoc.setXmlOut(true);
 
