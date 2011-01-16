@@ -41,10 +41,10 @@ public class Test {
 	private static String GAMEHOME = "game1Hometeam";
 	private static String GAMEGUEST = "game1Guestteam";
 	private static String GAMERESULT = "game1Result";
-	
+
 	private static String GAMEHOMERESULT = "game1HomeResult";
 	private static String GAMEGUESTRESULT = "game1GuestResult";
-	
+
 	private static String TIPPS = "tipps";
 
 	static XPathFactory xPathFactory = XPathFactory.newInstance();
@@ -107,18 +107,9 @@ public class Test {
 		try {
 			makeOptions(args);
 			Properties props = new Properties();
-			if (year.equals("2008")) {
-				props.load(Test.class
-						.getResourceAsStream("/kicktipp_xpath2008.properties"));
-			} else if (year.equals("2009")) {
-				props.load(Test.class
-						.getResourceAsStream("/kicktipp_xpath2009.properties"));
-			} // TODO: does not take 2010_2 into account any more
-			else {
-				props.load(Test.class
-						.getResourceAsStream("/kicktipp_xpath2010_3.properties"));
-			}
-				
+			props.load(Test.class
+					.getResourceAsStream("/kicktipp_xpath2011.properties"));
+
 			Tidy xmlDoc = new Tidy();
 			xmlDoc.setXmlOut(true);
 
@@ -147,12 +138,19 @@ public class Test {
 			int nrOfTippsInt = nl.getLength();
 			int nrOfGamesInt = 9;
 			for (int i = 1; i <= nrOfGamesInt; i++) {
-				Game game = new Game(
-						getXpathValue(props, GAMEHOME, doc3, i),
-						getXpathValue(props, GAMEGUEST, doc3, i),
-						year.equals("2010") ? (new Result((getXpathValue(props, GAMEHOMERESULT, doc3, i)) 
-								   + ":" + (getXpathValue(props, GAMEGUESTRESULT, doc3, i))))
-								   	: new Result(getXpathValue(props, GAMERESULT, doc3, i)));
+				String nameHomeTeam = getXpathValue(props, GAMEHOME, doc3, i);
+				String nameGuestTeam = getXpathValue(props, GAMEGUEST, doc3, i);
+				Result result = year.equals("2010") ? (new Result(
+						(getXpathValue(props, GAMEHOMERESULT, doc3, i))
+								+ ":"
+								+ (getXpathValue(props, GAMEGUESTRESULT, doc3,
+										i)))) : new Result(getXpathValue(props,
+						GAMERESULT, doc3, i));
+				if (debug)
+					System.out.println("hometeam: '" + nameHomeTeam
+							+ "', guestteam: '" + nameGuestTeam
+							+ "', result: '" + result + "'.");
+				Game game = new Game(nameHomeTeam, nameGuestTeam, result);
 				List<Tipp> tippList = new ArrayList<Tipp>();
 
 				for (int i1 = 1; i1 <= nrOfTippsInt; i1++) {
@@ -163,7 +161,9 @@ public class Test {
 					String tippString = (String) findXPath(doc3, replaceVar(i,
 							replaceTipper(i1, props.getProperty(TIPPERTIPP))),
 							XPathConstants.STRING);
-
+					if (debug)
+						System.out.println("tippername: '" + tipperName
+								+ "', tippString: '" + tippString + "'.");
 					Tipp tipp = new Tipp(tipperName, new Result(
 							tippString != null ? tippString : ""));
 					tippList.add(tipp);
@@ -179,7 +179,8 @@ public class Test {
 		}
 	}
 
-	private static String getXpathValue(Properties props, String property, Document doc3, int i) {
+	private static String getXpathValue(Properties props, String property,
+			Document doc3, int i) {
 		return (String) findXPath(doc3, replaceVar(i, props
 				.getProperty(property)), XPathConstants.STRING);
 	}
