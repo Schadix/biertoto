@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<project name="biertoto" default="jar">
+<project name="biertoto" default="dist">
 
-	<target name="jar">
+	<target name="dist">
 		<jar destfile="dist/biertoto.jar">
 			<fileset dir="bin" />
 			<fileset dir="resources" />
@@ -11,5 +11,6 @@
 		</copy>
 		<copy file="biertoto.sh" todir="dist" />
 		<copy file="biertoto.bat_" todir="dist" />
+		<echo>Distribution build</echo>
 	</target>
 </project>
