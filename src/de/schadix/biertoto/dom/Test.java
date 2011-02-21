@@ -25,6 +25,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
 import de.schadix.biertoto.model.Game;
@@ -112,7 +113,15 @@ public class Test {
 
 			Tidy xmlDoc = new Tidy();
 			xmlDoc.setXmlOut(true);
-
+			//xmlDoc.setMessageListener(new TidyMessageListenerImpl());
+		//	xmlDoc.setErrfile("/Users/schadix/Documents/workspace/biertoto/jtidy_errorout");
+			xmlDoc.setForceOutput(true);
+		//	xmlDoc.setOnlyErrors(true);
+			xmlDoc.setShowWarnings(false);
+			xmlDoc.setFixComments(true);
+			//xmlDoc.setPrintBodyOnly(true);
+			xmlDoc.setCharEncoding(Configuration.UTF8);
+			
 			DocumentBuilderFactory factory = DocumentBuilderFactory
 					.newInstance();
 			DocumentBuilder docBuilder = factory.newDocumentBuilder();
@@ -122,6 +131,7 @@ public class Test {
 
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			xmlDoc.parseDOM(Test.url.openStream(), outStream);
+			
 			if (debug) {
 				FileOutputStream fileOutputStream = new FileOutputStream(
 						"test.xml");
